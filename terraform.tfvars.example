@@ -1,0 +1,41 @@
+bridges_count=2
+bridges = [
+  {
+    name: "${BRIDGE0_NAME}",
+    ip: "${BRIDGE0_IP}",
+    netmask: "${BRIDGE0_NETMASK}",
+    range_start: "${BRIDGE0_RANGE_START}",
+    range_end: "${BRIDGE0_RANGE_END}"
+  }
+]
+
+master_count = 1
+master_nodes = [
+  {
+    name: "${MASTER0_NAME}",
+    ipmi_user: "${MASTER0_IPMI_USER}",
+    ipmi_password: "${MASTER0_IPMI_PASS}",
+    ipmi_port: "${MASTER0_IPMI_PORT}",
+    baremetal_mac_address: "${MASTER0_BAREMETAL_MAC}",
+    provisioning_mac_ddress: "${MASTER0_PROVISIONING_MAC}",
+    vcpu: "${MASTER0_VCPU}",
+    memory_gb: "${MASTER0_MEMORY_GB}",
+    provisioning_bridge: "${MASTER0_PROVISIONING_BRIDGE}",
+    baremetal_bridge: "${MASTER0_BAREMETAL_BRIDGE}"
+  }
+]
+
+worker_nodes = [
+  {
+    name: "${WORKER0_NAME}",
+    ipmi_user: "${WORKER0_IPMI_USER}",
+    ipmi_password: "${WORKER0_IPMI_PASS}",
+    ipmi_port: "${WORKER0_IPMI_PORT}",
+    mac_address: "${WORKER0_MAC}",
+    vcpu: "${MASTER0_VCPU}",
+    memory_gb: "${MASTER0_MEMORY_GB}",
+    provisioning_bridge: "${MASTER0_PROVISIONING_BRIDGE}",
+    baremetal_bridge: "${MASTER0_BAREMETAL_BRIDGE}"
+  }
+]
+
