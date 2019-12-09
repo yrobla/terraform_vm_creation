@@ -3,38 +3,6 @@ locals {
   vm_size = "120G"
 }
 
-# configure bridges
-data "template_file" "bridge" {
-    count = var.bridge_count
-    template = file("bridge.tpl")
-    vars =  {
-      name        = "${var.bridges[count.index]["name"]}"
-      ip          = "${var.bridges[count.index]["ip"]}"
-      netmask     = "${var.bridges[count.index]["netmask"]}"
-      range_start = "${var.bridges[count.index]["range_start"]}"
-      range_end   = "${var.bridges[count.index]["range_end"]}"
-    }
-}
-
-resource "local_file" "bridge" {
-  count = var.bridge_count
-  content = "${data.template_file.bridge[count.index]["rendered"]}"
-  filename = "/tmp/bridge_${count.index}.xml"
-}
-
-resource "null_resource" "bridge" {
-    count = var.bridge_count
-    provisioner "local-exec" {
-        command = <<EOT
-virsh net-define /tmp/bridge_${count.index}.xml
-virsh net-start ${var.bridges[count.index]["name"]}
-EOT
-
-    }
-    depends_on = [local_file.bridge]
-}
-
-
 # configure vms
 data "template_file" "vm_master" {
     count = var.master_count
@@ -70,20 +38,7 @@ vbmc start ${var.master_nodes[count.index]["name"]}
 EOT
 
     }
-    depends_on = [local_file.vm_master, null_resource.bridge]
-}
-
-# destroy bridge
-resource "null_resource" "bridge_destroy" {
-    count = var.bridge_count
-    provisioner "local-exec" {
-        when = "destroy"
-        command = <<EOT
-virsh net-destroy ${var.bridges[count.index]["name"]}
-virsh net-undefine ${var.bridges[count.index]["name"]}
-EOT
-
-    }
+    depends_on = [local_file.vm_master]
 }
 
 # destroy vm
@@ -99,5 +54,4 @@ vbmc delete ${var.master_nodes[count.index]["name"]}
 EOT
 
     }
-    depends_on = [null_resource.bridge_destroy]
 }
